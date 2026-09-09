@@ -1,14 +1,21 @@
 <?
 require "include/php/db.php";
 if(!isset($_SESSION["login"]))
-	header('Location: /login.php '); //Тут доступ тільки авторизованим
+{
+	header('Location: /login.php'); //Тут доступ тільки авторизованим
+	exit;
+}
 
 
 
 //Якщо запит на створення нового проекту
 if(isset($_GET["newDock"]))
 {
-	$dirName = "project/" . $_GET['newDock'];
+	$projectName = trim(str_replace(['/', '\\'], '', $_GET['newDock']));
+	if($projectName === '')
+		die('Назва проекту порожня...');
+
+	$dirName = "project/" . $projectName;
 	if (!mkdir($dirName, 0777, true)) 
     die('Проект не вдалось створити...');
 	else
@@ -20,7 +27,8 @@ if(isset($_GET["newDock"]))
 		mkdir($dirName."/video", 0777, true);
 	
 	}
-	header('Location: /'); 
+	header('Location: /');
+	exit;
 
 }
 

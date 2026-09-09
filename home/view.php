@@ -5,7 +5,10 @@ require "include/php/func.php";
 
 
 if(!isset($_SESSION["login"]))
-	header('Location: /login.php '); //Тут доступ тільки авторизованим
+{
+	header('Location: /login.php'); //Тут доступ тільки авторизованим
+	exit;
+}
 
 
 
@@ -19,12 +22,19 @@ if(isset($_POST["text"])) //Якщо надіслано зі змінною те
 
 $dirProject = "";
 if(!isset($_GET["project"]))
-	header('Location: / '); //Якщо не вказано що редагувати 
+{
+	header('Location: /'); //Якщо не вказано що редагувати
+	exit;
+}
 
 
-$dirProject = "project/".$_GET["project"];
+$projectName = str_replace(['/', '\\'], '', $_GET["project"]);
+$dirProject = "project/".$projectName;
 if(!is_dir($dirProject))
-	header('Location: / '); //Якщо папки проекту немає то і нікуди його зберігати на головну кидаємо
+{
+	header('Location: /'); //Якщо папки проекту немає то і нікуди його зберігати на головну кидаємо
+	exit;
+}
 
 
 //Запит на завантажені медіа
@@ -69,7 +79,7 @@ if(isset($_GET["project"]) && isset($_GET["type"]))
 <link rel="stylesheet" type="text/css" href="/node_modules/tinymce/skins/content/document/content.min.css">
 
 
-<title><? echo htmlspecialchars($_GET["project"]); ?></title>
+<title><? echo htmlspecialchars($projectName); ?></title>
 
 
 
@@ -103,6 +113,12 @@ max-width:100%;
 .mce-content-body div:active
 {
 	border: 3px solid #333;
+}
+
+#tinymce audio,
+#tinymce video
+{
+	pointer-events: none;
 }
 
 

@@ -5,15 +5,31 @@ require "include/php/func.php";
 
 
 if(!isset($_SESSION["login"]))
-	header('Location: /login.php '); //Тут доступ тільки авторизованим
+{
+	header('Location: /login.php'); //Тут доступ тільки авторизованим
+	exit;
+}
 
 $dirProject = "";
 if(!isset($_GET["project"]))
-	header('Location: / '); //Якщо не вказано що редагувати 
+{
+	header('Location: /'); //Якщо не вказано що редагувати
+	exit;
+}
 
-$dirProject = "project/".$_GET["project"];
+$projectName = str_replace(['/', '\\'], '', $_GET["project"]);
+$dirProject = "project/".$projectName;
 if(!is_dir($dirProject))
-	header('Location: / '); //Якщо папки проекту немає то і нікуди його зберігати на головну кидаємо
+{
+	header('Location: /'); //Якщо папки проекту немає то і нікуди його зберігати на головну кидаємо
+	exit;
+}
+
+foreach (['media', 'media/image', 'media/video', 'media/audio'] as $projectDir)
+{
+	if(!is_dir($dirProject."/".$projectDir))
+		mkdir($dirProject."/".$projectDir, 0777, true);
+}
 
 
 //Запит на завантажені медіа
@@ -53,7 +69,7 @@ if(isset($_POST["text"])) //Якщо надіслано зі змінною те
 <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/themes/metroui.css">
 
 
-<title><? echo htmlspecialchars($_GET["project"]); ?></title>
+<title><? echo htmlspecialchars($projectName); ?></title>
 
 <style>
 @media (orientation: portrait) { 
@@ -85,7 +101,7 @@ img
 
 function MySave() //Функція зберігання документа
 {
-	let getq = "editor.php?project=" + encodeURIComponent("<? echo $_GET['project'];?>");
+	let getq = "editor.php?project=" + encodeURIComponent(<? echo json_encode($projectName); ?>);
 	
 		var httpReq = new XMLHttpRequest();
             httpReq.open("POST",getq);
@@ -114,9 +130,8 @@ function MySave() //Функція зберігання документа
 }
  
 tinymce.init({//Ініціалізація і налаштування текстового редактора
-    selector: "#textEdit",
+	selector: "#textEdit",
 	language : 'uk',
-	gecko_spellcheck:true,
 	browser_spellcheck: true,
 	content_css: "/include/css/editor.css",
 	 toolbar: 'mySave | media Image link unlink removeformat |  bullist numlist | forecolor  backcolor | styleselect | bold italic strikethrough | outdent indent   alignleft aligncenter alignright alignjustify | table tablecellborderwidth  tablecellborderstyle  tablecellbackgroundcolor tablecellbordercolor \n tablecellvalign | blockquote ',
@@ -134,7 +149,7 @@ tinymce.init({//Ініціалізація і налаштування текс�
  });
  
 //Дані з php в js
-let project = "<? htmlspecialchars($_GET['project']); ?>"; //Назва проекту а по сумісності і папка проекту
+let project = <? echo json_encode($projectName); ?>; //Назва проекту а по сумісності і папка проекту
 </script>
 
 <script>
@@ -159,7 +174,7 @@ let project = "<? htmlspecialchars($_GET['project']); ?>"; //Назва прое
 	<div class = "btl" onclick = " Display('#vdBlock','');	Display('#auBlock',''); DisplayINV('#ImBlock','inline-block');" id  = "pic"></div>
 	<div class = "btl" onclick = " Display('#ImBlock','');  Display('#auBlock','');   DisplayINV('#vdBlock','inline-block');" id  = "vid"></div>
 	<div class = "btl" onclick = " Display('#ImBlock','');  Display('#vdBlock','');   DisplayINV('#auBlock','inline-block');" id  = "aud"></div>
-	<a href = "view.php?project=<?echo $_GET["project"];?>"><div class = "btl" id  = "view"></div></a>
+	<a href = "view.php?project=<?echo urlencode($projectName);?>"><div class = "btl" id  = "view"></div></a>
 	<!--div onclick = "PushText('onclick','error','bottomRight')" id  = "pic"></div-->
 	</div>
 <!--/form-->
@@ -182,7 +197,7 @@ foreach ($files as $f)
 </div>
 
 
-<? echo GetHtmlGegDrob("div#ImBlock","image",$_GET["project"]); ?>
+<? echo GetHtmlGegDrob("div#ImBlock","image",$projectName); ?>
 
 <!--================================================================================-->
 	
@@ -206,7 +221,7 @@ foreach ($files as $f)
 	
 ?>
 </div>
-<? echo GetHtmlGegDrob("div#vdBlock","video",$_GET["project"]); ?>
+<? echo GetHtmlGegDrob("div#vdBlock","video",$projectName); ?>
 <!--================================================================================-->
 
 
@@ -238,7 +253,7 @@ foreach ($files as $f)
 	
 ?>
 </div>
-<? echo GetHtmlGegDrob("div#auBlock","audio",$_GET["project"]); ?>
+<? echo GetHtmlGegDrob("div#auBlock","audio",$projectName); ?>
 <!--================================================================================-->
 	
 

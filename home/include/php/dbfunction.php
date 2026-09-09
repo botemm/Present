@@ -51,18 +51,16 @@ function Open($dirProject)
 	 R::setup("sqlite:".$dirProject."/text.db");
 	 if(!R::testConnection()) return "falseOpen";
 	
-	$idEnd = R::findOne('sqlite_sequence');
-	$text = R::findOne('text',"id = ?",[$idEnd->seq]);
-	 R::close();	
+	$text = R::findOne('text', ' ORDER BY id DESC ');
+	R::close();
 
+	if($text == NULL)
+	{
+		$text = new stdClass();
+		$text->text = "";
+	}
 
-	
-	 
-
-	 
-	 
-	 
-	 return $text;
+	return $text;
 }
 
 

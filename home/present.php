@@ -5,13 +5,17 @@ require "include/php/func.php";
 
 
 if(!isset($_SESSION["login"]))
-	header('Location: /login.php '); //Тут доступ тільки авторизованим
+{
+	header('Location: /login.php'); //Тут доступ тільки авторизованим
+	exit;
+}
 
 
 if(isset($_GET["gtext"]))
 {
 	//Будемо підправляти деякі теги
-	$text = file_get_contents("AppData/temp/" . $_SESSION['login']);
+	$tempFile = "AppData/temp/" . basename($_SESSION['login']);
+	$text = file_exists($tempFile) ? file_get_contents($tempFile) : "";
 	
 	//$text = str_replace("<video","<video  allowfullscreen='true' controls autoplay ",$text);
 	$text = str_replace("</video>","</video> <script></script>",$text);	

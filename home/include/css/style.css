@@ -363,6 +363,12 @@ margin:3px;
 	background-color:#333;
 }
 
+.media audio,
+.media video
+{
+	pointer-events: none;
+}
+
 img
 {
 	max-width:100%;

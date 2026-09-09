@@ -11,7 +11,10 @@ if($result == "true")
 $_SESSION["login"] = $_GET['login'];
 
 if(isset($_SESSION["login"]))
-	header('Location: / ');
+{
+	header('Location: /');
+	exit;
+}
 
 //Login($login,$password);
 ?>   
@@ -30,7 +33,7 @@ if(isset($_SESSION["login"]))
 <div class = "login_onteiner">
 	<div class = "login">
 		<h1>Авторизація</h1>
-		<input type = "text" name = "login" placeholder = "login" value = "<? echo $_GET['login'];  ?>"/>
+		<input type = "text" name = "login" placeholder = "login" value = "<? echo htmlspecialchars($_GET['login'] ?? '');  ?>"/>
 		<?
 		if($result == "NULL") echo "<p>Не вірний логін</p>";
 		?>

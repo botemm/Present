@@ -5,7 +5,8 @@
 
 $ds          = DIRECTORY_SEPARATOR;  //1
  
-$storeFolder = "project/" . $_POST['project'];   //2
+$project = str_replace(['..', '/', '\\'], ['', DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR], $_POST['project'] ?? '');
+$storeFolder = "project/" . $project;   //2
  //echo $storeFolder;
 if (!empty($_FILES)) {
      
@@ -13,9 +14,10 @@ if (!empty($_FILES)) {
       
     $targetPath = dirname( __FILE__ ) . $ds. $storeFolder . $ds;  //4
      
-    $targetFile =  $targetPath. $_FILES['file']['name'];  //5
+    $targetFile =  $targetPath. basename($_FILES['file']['name']);  //5
  
-    move_uploaded_file($tempFile,$targetFile); //6
+    if(is_dir($targetPath))
+        move_uploaded_file($tempFile,$targetFile); //6
      
 }
 ?>   
